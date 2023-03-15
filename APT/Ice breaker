@@ -1,0 +1,19 @@
+rule winx64_nodejs_backdoor_ice_breaker {	
+	meta:
+		author = "Felipe Duarte, Security Joes"
+		description = "Detects IceBreaker Backdoor"
+		sha256_reference = "8727e8759232721413c038e45c5e05cbfe5194489c060875f273329db2aa7c08"
+	strings:
+		$str1 = "AssetsFolder"
+		$str2 = "machineId"
+		$str3 = "installPlugin"
+		$str4 = "enableSock"
+		$str5 = "UseCMDLine"
+		$str6 = "UsePWRLine"
+		$str7 = "puluginUrl"
+		$str8 = "tsocks.exe"
+		$str9 = "getChromeCookie"
+		
+	condition:
+		7 of them 
+}
