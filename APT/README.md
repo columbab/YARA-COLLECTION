@@ -9,3 +9,6 @@ https://github.com/eclecticiq/eiq-community-exchange/blob/main/yara/Windows_1000
 
 Dark Pink
 https://github.com/eclecticiq/eiq-community-exchange/blob/main/yara/Windows_1000-1999/Y1805.yara
+
+IceBreaker
+https://www.securityjoes.com/post/operation-ice-breaker-targets-the-gam-bl-ing-industry-right-before-it-s-biggest-gathering
