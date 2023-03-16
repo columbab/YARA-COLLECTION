@@ -12,3 +12,6 @@ https://github.com/eclecticiq/eiq-community-exchange/blob/main/yara/Windows_1000
 
 IceBreaker
 https://www.securityjoes.com/post/operation-ice-breaker-targets-the-gam-bl-ing-industry-right-before-it-s-biggest-gathering
+
+APT28
+https://samples.vx-underground.org/APTs/2018/2018.07.13/Paper/Operation%20Roman%20Holiday.pdf
