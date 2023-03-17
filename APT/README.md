@@ -17,3 +17,6 @@ APT28
 https://samples.vx-underground.org/APTs/2018/2018.07.13/Paper/Operation%20Roman%20Holiday.pdf
 https://blog.cluster25.duskrise.com/2021/06/03/a-not-so-fancy-game-apt28-skinnyboy
 https://securityscorecard.com/research/apt28s-stealer-called-credomap/
+
+APT5
+https://samples.vx-underground.org/APTs/2022/2022.12.13/Paper/CSA-APT5-CITRIXADC-V1.PDF
