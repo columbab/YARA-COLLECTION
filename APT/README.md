@@ -20,3 +20,6 @@ https://securityscorecard.com/research/apt28s-stealer-called-credomap/
 
 APT5
 https://samples.vx-underground.org/APTs/2022/2022.12.13/Paper/CSA-APT5-CITRIXADC-V1.PDF
+
+Cloud Atlas
+https://www.ptsecurity.com/ww-en/analytics/pt-esc-threat-intelligence/apt-cloud-atlas-unbroken-threat/
