@@ -1,0 +1,86 @@
+rule APT_donot_SFX : Donot sfx
+{
+    meta:
+        author = "IVOKER"
+        date = "2023-03-24"
+        link = "https://mp.weixin.qq.com/s/duZiNBDwPwJ3QbbaFrNzYg"
+        md5 = "4eaa63dd65fc699260306c743b46303b"
+    strings:
+        $str1 = "Rar"
+        $str2 = "CMT;The comment below contains SFX script commands" nocase ascii wide
+        $setup_1 = "Setup=Kashmir" nocase ascii
+        $setup_2 = "Setup=Kashmir" nocase ascii wide
+        $setup_3 = /Setup=rundll32.exe [\d\w\s]+.dll,[\s\d]+ /
+
+    condition:
+        uint16(0) == 0x5A4D and all of ($str*) and any of ($setup_*)
+}
+
+
+rule APT_donot_downloader : Donot downloader
+{
+    meta:
+        author = "IVOKER"
+        date = "2023-03-24"
+        link = "https://mp.weixin.qq.com/s/duZiNBDwPwJ3QbbaFrNzYg"
+        md5 = "07a3c19bc67c5f44c888ce75d4147ecf"
+    strings:
+        $info_1 = "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall"
+        $info_2 = "DisplayName"
+        /*
+        51                            push    ecx             ; lpWideCharStr
+        6A 00                         push    0               ; dwFlags
+        68 E9 FD 00 00                push    0FDE9h          ; CodePage
+        FF 15 60 60 03 10             call    ds:WideCharToMultiByte
+        */
+        $info_3 = {6A 00 68 E9 FD 00 00 FF 15}
+        $clsid = {9F 36 87 0F E5 A4 FC 4C BD 3E 73 E6 15 45 72 DD }
+        $mutex = "olgui1Pigg"
+
+    condition:
+        uint16(0) == 0x5A4D and all of ($info*) and $clsid and $mutex
+}
+
+
+import "hash"
+rule APT_donot_md5 : Donot md5 
+{
+    meta:
+        author = "IVOKER"
+        date = "2023-03-24"
+        link = "https://mp.weixin.qq.com/s/duZiNBDwPwJ3QbbaFrNzYg"
+
+    condition:
+        uint16(0) == 0x5A4D and 
+        filesize < 2MB and
+		hash.md5(0,filesize) == "06adbb4ba31a52cc5c9258bf6d99812c" or
+		hash.md5(0,filesize) == "d98e2d7c8e91a9d8e87abe744f6d43f9" or
+		hash.md5(0,filesize) == "c839d8a01c97407526b3407022823c8a" or
+		hash.md5(0,filesize) == "1c4fb7c41e7928bfb74784d910522771" or
+		hash.md5(0,filesize) == "e1d235c95a7c06b1203048972cf179fa" or
+		hash.md5(0,filesize) == "6de75b200652eefa4a6a3bb84da7f798" or
+		hash.md5(0,filesize) == "0ec8911f9764ea7b254ea19cd171535e" or
+		hash.md5(0,filesize) == "171c011571f94ea2f5c928bdf5d560dc" or
+		hash.md5(0,filesize) == "79cff3bc3cbe51e1b3fecd131b949930" or
+		hash.md5(0,filesize) == "dcac3a03c0c58b90cd4cbcc814d12847" or
+		hash.md5(0,filesize) == "e46cd1c4b32355cad39b41ef3b66b659" or
+		hash.md5(0,filesize) == "c231254ced08ca556bf35e587469628f" or
+		hash.md5(0,filesize) == "5557b32672ee9ad6be20395d447a3e52" or
+		hash.md5(0,filesize) == "3feb4de4375dcc3ffb4144e2fc61dd94" or
+		hash.md5(0,filesize) == "4c0dadc4b6938dcc9ca8951d34cb2a09" or
+		hash.md5(0,filesize) == "d30631ba67a28a6e4ab0c4e9584e26c2" or
+		hash.md5(0,filesize) == "2abc60fa1e042612e723360ccd8220c6" or
+		hash.md5(0,filesize) == "3c6ad03f0ab284350d8b0d3d4cf22196" or
+		hash.md5(0,filesize) == "07a3c19bc67c5f44c888ce75d4147ecf" or
+		hash.md5(0,filesize) == "d7e123fe7fb8a5f56ec9d89f7787340d" or
+		hash.md5(0,filesize) == "20c581284cccadd8b6193c2e1c84a900" or
+		hash.md5(0,filesize) == "5e464d04b35a83d28c4e26c06eec28f5" or
+		hash.md5(0,filesize) == "9946df6c429b83009535dca8d1a5d321" or
+		hash.md5(0,filesize) == "ee24afbe471b5e63b06a759fa0eba0cc" or
+		hash.md5(0,filesize) == "7750cac1cab5e6fd9e5cadecbc3c51f6" or
+		hash.md5(0,filesize) == "0844b582c202dca08083d04d10bdf36e" or
+		hash.md5(0,filesize) == "4eaa63dd65fc699260306c743b46303b" or
+		hash.md5(0,filesize) == "a84d7a5b8831d7494ee20b939e37e56f" or
+		hash.md5(0,filesize) == "3b730afd4ed953a9031a3facf111a64e" or
+		hash.md5(0,filesize) == "cf646416025a84c5ef25b99dc999da9d"
+}
