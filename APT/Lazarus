@@ -1,124 +1,608 @@
-rule apt_win_applejeus_oct22 : Lazarus
-{
-    meta:
-        author = "threatintel@volexity.com"
-        description = "Detects AppleJeus DLL samples."
-        date = "2022-11-03"
-        hash1 = "82e67114d632795edf29ce1d50a4c1c444846d9e16cd121ce26e63c8dc4a1629"
-        memory_suitable = 1
-        license = "See license at https://github.com/volexity/threat-intel/blob/main/LICENSE.txt"
+import "pe"
 
-    strings:
-        $s1 = "HijackingLib.dll" ascii
+rule APT_Lazarus_Aug18_Downloader_1 {
+   meta:
+      description = "Detects Lazarus Group Malware Downloadery"
+      license = "Detection Rule License 1.1 https://github.com/Neo23x0/signature-base/blob/master/LICENSE"
+      author = "Florian Roth (Nextron Systems)"
+      reference = "https://securelist.com/operation-applejeus/87553/"
+      date = "2018-08-24"
+      hash1 = "d555dcb6da4a6b87e256ef75c0150780b8a343c4a1e09935b0647f01d974d94d"
+      hash2 = "bdff852398f174e9eef1db1c2d3fefdda25fe0ea90a40a2e06e51b5c0ebd69eb"
+      hash3 = "e2199fc4e4b31f7e4c61f6d9038577633ed6ad787718ed7c39b36f316f38befd"
+   strings:
+      $x1 = "H:\\DEV\\TManager\\" ascii
+      $x2 = "\\Release\\dloader.pdb" ascii
+      $x3 = "Z:\\jeus\\"
+      $x4 = "\\Debug\\dloader.pdb" ascii
+      $x5 = "Moz&Wie;#t/6T!2yW29ab@ad%Df324V$Yd" fullword ascii
 
-    condition:
-        $s1
+      $s1 = "Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.1; Trident/6.0)" fullword ascii
+      $s2 = "Error protecting memory page" fullword ascii
+   condition:
+      uint16(0) == 0x5a4d and filesize < 500KB and (
+         ( 1 of ($x*) or 2 of them )
+      )
 }
 
-rule apt_win_applejeus_b_oct22 : Lazarus
-{
-    meta:
-        author = "threatintel@volexity.com"
-        date = "2022-11-03"
-        description = "Detected AppleJeus unpacked samples."
-        hash1 = "9352625b3e6a3c998e328e11ad43efb5602fe669aed9c9388af5f55fadfedc78"
-        memory_suitable = 1
-        license = "See license at https://github.com/volexity/threat-intel/blob/main/LICENSE.txt"
-
-    strings:
-        $key1 = "AppX7y4nbzq37zn4ks9k7amqjywdat7d"
-        $key2 = "Gd2n5frvG2eZ1KOe"
-
-        $str1 = "Windows %d(%d)-%s"
-        $str2 = "&act=check"
-
-    condition:
-        (
-            any of ($key*) and
-            1 of ($str*)
-        ) or
-        all of ($str*)
+rule APT_Lazarus_Aug18_1 {
+   meta:
+      description = "Detects Lazarus Group Malware"
+      license = "Detection Rule License 1.1 https://github.com/Neo23x0/signature-base/blob/master/LICENSE"
+      author = "Florian Roth (Nextron Systems)"
+      reference = "https://securelist.com/operation-applejeus/87553/"
+      date = "2018-08-24"
+      hash1 = "ef400d73c6920ac811af401259e376458b498eb0084631386136747dfc3dcfa8"
+      hash2 = "1b8d3e69fc214cb7a08bef3c00124717f4b4d7fd6be65f2829e9fd337fc7c03c"
+   strings:
+      $s1 = "mws2_32.dll" fullword wide
+      $s2 = "%s.bat" fullword wide
+      $s3 = "%s%s%s \"%s > %s 2>&1\"" fullword wide
+      $s4 = "Microsoft Corporation. All rights reserved." fullword wide
+      $s5 = "ping 127.0.0.1 -n 3" fullword wide
+   condition:
+      uint16(0) == 0x5a4d and filesize < 500KB and (
+         pe.imphash() == "3af996e4f960108533e69b9033503f40" or
+         4 of them
+      )
 }
 
-rule apt_win_applejeus_c_oct22 : Lazarus
-{
-    meta:
-        author = "threatintel@volexity.com"
-        date = "2022-11-03"
-        description = "Detected AppleJeus unpacked samples."
-        hash1 = "a0db8f8f13a27df1eacbc01505f311f6b14cf9b84fbc7e84cb764a13f001dbbb"
-        memory_suitable = 1
-        license = "See license at https://github.com/volexity/threat-intel/blob/main/LICENSE.txt"
-
-    strings:
-        $str1 = "%sd.e%sc \"%s > %s 2>&1\"" wide
-        $str2 = "tuid"
-        $str3 = "content"
-        $str4 = "payload"
-        $str5 = "fconn"
-        $str6 = "Mozilla_%lu"
-
-    condition:
-        5 of them
+rule APT_Lazarus_Aug18_2 {
+   meta:
+      description = "Detects Lazarus Group Malware"
+      license = "Detection Rule License 1.1 https://github.com/Neo23x0/signature-base/blob/master/LICENSE"
+      author = "Florian Roth (Nextron Systems)"
+      reference = "https://securelist.com/operation-applejeus/87553/"
+      date = "2018-08-24"
+      hash1 = "8ae766795cda6336fd5cad9e89199ea2a1939a35e03eb0e54c503b1029d870c4"
+      hash2 = "d3ef262bae0beb5d35841d131b3f89a9b71a941a86dab1913bda72b935744d2e"
+   strings:
+      $s1 = "vAdvapi32.dll" fullword wide
+      $s2 = "lws2_32.dll" fullword wide
+      $s3 = "%s %s > \"%s\" 2>&1" fullword wide
+      $s4 = "Not Service" fullword wide
+      $s5 = "ping 127.0.0.1 -n 3" fullword wide
+   condition:
+      uint16(0) == 0x5a4d and filesize < 600KB and (
+         4 of them
+      )
 }
 
-rule apt_win_applejeus_d_oct22 : Lazarus
-{
-    meta:
-        author = "threatintel@volexity.com"
-        date = "2022-11-10"
-        description = "Detected AppleJeus unpacked samples."
-        hash1 = "a241b6611afba8bb1de69044115483adb74f66ab4a80f7423e13c652422cb379"
-        memory_suitable = 1
-        license = "See license at https://github.com/volexity/threat-intel/blob/main/LICENSE.txt"
-
-    strings:
-        $reg = "Software\\Bitcoin\\Bitcoin-Qt"
-        $pattern = "%s=%d&%s=%s&%s=%s&%s=%d"
-        $exec = " \"%s\", RaitingSetupUI "
-        $http = "Accept: */*" wide
-        
-    condition:
-        all of them    
+rule APT_FallChill_RC4_Keys {
+   meta:
+      license = "Detection Rule License 1.1 https://github.com/Neo23x0/signature-base/blob/master/LICENSE"
+      author = "Florian Roth (Nextron Systems)"
+      description = "Detects FallChill RC4 keys"
+      reference = "https://securelist.com/operation-applejeus/87553/"
+      date = "2018-08-21"
+   strings:
+      /* MOV POS 4BYTE-OF-KEY */
+      $cod0 = { c7 ?? ?? da e1 61 ff
+                c7 ?? ?? 0c 27 95 87
+                c7 ?? ?? 17 57 a4 d6
+                c7 ?? ?? ea e3 82 2b }
+   condition:
+      uint16(0) == 0x5a4d and 1 of them
 }
 
-rule cf_office_win_macro_lazarus_jeus_b : Lazarus
-{
-    meta:
-        author = "threatintel@volexity.com"
-        description = "Detects macros used by the Lazarus threat actor to distribute AppleJeus."
-        date = "2022-11-03"
-        hash1 = "17e6189c19dedea678969e042c64de2a51dd9fba69ff521571d63fd92e48601b"
-        memory_suitable = 0
-        license = "See license at https://github.com/volexity/threat-intel/blob/main/LICENSE.txt"
-
-    strings:
-        $a1 = ", vbDirectory) = \"\" Then" ascii
-        $a2 = ".Caption & " ascii
-        $a3 = ".nodeTypedValue" ascii
-        $a4 = ".Application.Visible = False" ascii
-        $a5 = " MkDir (" ascii
-
-    condition:
-        all of ($a*)
+rule APT_NK_Lazarus_RC4_Loop {
+   meta: 
+      author = "f-secure "
+      description = "Detects RC4 loop in Lazarus Group implant" 
+      date = "2020-06-10"
+      reference = "https://labs.f-secure.com/publications/ti-report-lazarus-group-cryptocurrency-vertical"
+   strings:
+      $str_rc4_loop = { 41 FE 8? 00 01 00 00 45 0F B6 ?? 00 01 00 00 48 
+                        FF C? 43 0F B6 0? ?? 41 00 8? 01 01 00 00 41 0F 
+                        B6 ?? 01 01 00 00 }
+   condition:
+      int16(0) == 0x5a4d and filesize < 3000KB and $str_rc4_loop
 }
 
-rule cf_office_win_macro_lazarus_jeus : Lazarus
-{
-    meta:
-        author = "threatintel@volexity.com"
-        date = "2022-11-02"
-        description = "Detects malicious documents used by Lazarus in a campaign dropping the AppleJeus malware."
-        hash1 = "17e6189c19dedea678969e042c64de2a51dd9fba69ff521571d63fd92e48601b"
-        memory_suitable = 1
-        license = "See license at https://github.com/volexity/threat-intel/blob/main/LICENSE.txt"
+rule APT_NK_Lazarus_Network_Backdoor_Unpacked {
+   meta:
+      author = "f-secure"
+      description = "Detects unpacked variant of Lazarus Group network backdoor" 
+      date = "2020-06-10"      
+      reference = "https://labs.f-secure.com/publications/ti-report-lazarus-group-cryptocurrency-vertical"
+   strings:
+      $str_netsh_1 = "netsh firewall add portopening TCP %d" ascii wide nocase 
+      $str_netsh_2 = "netsh firewall delete portopening TCP %d" ascii wide nocase 
+      $str_mask_1 = "cmd.exe /c \"%s >> %s 2>&1\"" ascii wide
+      $str_mask_2 = "cmd.exe /c \"%s 2>> %s\"" ascii wide 
+      $str_mask_3 = "%s\\%s\\%s" ascii wide
+      $str_other_1 = "perflog.dat" ascii wide nocase 
+      $str_other_2 = "perflog.evt" ascii wide nocase 
+      $str_other_3 = "cbstc.log" ascii wide nocase 
+      $str_other_4 = "LdrGetProcedureAddress" ascii 
+      $str_other_5 = "NtProtectVirtualMemory" ascii
+   condition:
+      int16(0) == 0x5a4d
+      and filesize < 3000KB
+      and 1 of ($str_netsh*)
+      and 1 of ($str_mask*)
+      and 1 of ($str_other*)
+}
 
-    strings:
-        $s1 = "0M8R4K" ascii
-        $s2 = "bin.base64" ascii
-        $s3 = "dragon" ascii
-        $s4 = "Workbook_Open" ascii
 
-    condition:
-       3 of ($s*) 
+/*
+   Yara Rule Set
+   Author: Florian Roth
+   Date: 2017-12-20
+   Identifier: Lazarus malware
+   Reference: https://www.proofpoint.com/us/threat-insight/post/north-korea-bitten-bitcoin-bug-financially-motivated-campaigns-reveal-new
+*/
+
+/* Rule Set ----------------------------------------------------------------- */
+
+rule Lazarus_Dec_17_1 {
+   meta:
+      description = "Detects Lazarus malware from incident in Dec 2017"
+      license = "Detection Rule License 1.1 https://github.com/Neo23x0/signature-base/blob/master/LICENSE"
+      author = "Florian Roth (Nextron Systems)"
+      reference = "https://goo.gl/8U6fY2"
+      date = "2017-12-20"
+      hash1 = "d5f9a81df5061c69be9c0ed55fba7d796e1a8ebab7c609ae437c574bd7b30b48"
+   strings:
+      $s1 = "::DataSpace/Storage/MSCompressed/Transform/" ascii
+      $s2 = "HHA Version 4." ascii
+      $s3 = { 74 45 58 74 53 6F 66 74 77 61 72 65 00 41 64 6F
+              62 65 20 49 6D 61 67 65 52 65 61 64 79 71 }
+      $s4 = "bUEeYE" fullword ascii
+   condition:
+      uint16(0) == 0x5449 and filesize < 4000KB and all of them
+}
+
+rule Lazarus_Dec_17_2 {
+   meta:
+      description = "Detects Lazarus malware from incident in Dec 2017"
+      license = "Detection Rule License 1.1 https://github.com/Neo23x0/signature-base/blob/master/LICENSE"
+      author = "Florian Roth (Nextron Systems)"
+      reference = "https://goo.gl/8U6fY2"
+      date = "2017-12-20"
+      hash1 = "cbebafb2f4d77967ffb1a74aac09633b5af616046f31dddf899019ba78a55411"
+      hash2 = "9ca3e56dcb2d1b92e88a0d09d8cab2207ee6d1f55bada744ef81e8b8cf155453"
+   strings:
+      $s1 = "SkypeSetup.exe" fullword wide
+      $s2 = "%s\\SkypeSetup.exe" fullword ascii
+      $s3 = "Skype Technologies S.A." fullword wide
+
+      $a1 = "Microsoft Code Signing PCA" ascii wide
+   condition:
+      uint16(0) == 0x5a4d and filesize < 7000KB and (
+        all of ($s*) and not $a1
+      )
+}
+
+rule Lazarus_Dec_17_4 {
+   meta:
+      description = "Detects Lazarus malware from incident in Dec 2017ithumb.js"
+      license = "Detection Rule License 1.1 https://github.com/Neo23x0/signature-base/blob/master/LICENSE"
+      author = "Florian Roth (Nextron Systems)"
+      reference = "https://goo.gl/8U6fY2"
+      date = "2017-12-20"
+      hash1 = "8ff100ca86cb62117f1290e71d5f9c0519661d6c955d9fcfb71f0bbdf75b51b3"
+      hash2 = "7975c09dd436fededd38acee9769ad367bfe07c769770bd152f33a10ed36529e"
+   strings:
+      $s1 = "var _0xf5ed=[\"\\x57\\x53\\x63\\x72\\x69\\x70\\x74\\x2E\\x53\\x68\\x65\\x6C\\x6C\"," ascii
+   condition:
+      filesize < 9KB and 1 of them
+}
+
+rule Lazarus_Dec_17_5 {
+   meta:
+      description = "Detects Lazarus malware from incident in Dec 2017"
+      license = "Detection Rule License 1.1 https://github.com/Neo23x0/signature-base/blob/master/LICENSE"
+      author = "Florian Roth (Nextron Systems)"
+      reference = "https://goo.gl/8U6fY2"
+      date = "2017-12-20"
+      hash1 = "db8163d054a35522d0dec35743cfd2c9872e0eb446467b573a79f84d61761471"
+   strings:
+      $x1 = "$ProID = Start-Process powershell.exe -PassThru -WindowStyle Hidden -ArgumentList" fullword ascii
+      $x2 = "$respTxt = HttpRequestFunc_doprocess -szURI $szFullURL -szMethod $szMethod -contentData $contentData;" fullword ascii
+      $x3 = "[String]$PS_PATH = \"C:\\\\Users\\\\Public\\\\Documents\\\\ProxyAutoUpdate.ps1\";" fullword ascii
+      $x4 = "$cmdSchedule = 'schtasks /create /tn \"ProxyServerUpdater\"" ascii
+      $x5 = "/tr \"powershell.exe -ep bypass -windowstyle hidden -file " ascii
+      $x6 = "C:\\\\Users\\\\Public\\\\Documents\\\\tmp' + -join " ascii
+      $x7 = "$cmdResult = cmd.exe /c $cmdInst | Out-String;" fullword ascii
+      $x8 = "whoami /groups | findstr /c:\"S-1-5-32-544\"" fullword ascii
+   condition:
+      filesize < 500KB and 1 of them
+}import "pe"
+rule HvS_APT37_smb_scanner {
+   meta:
+      description = "Unknown smb login scanner used by APT37"
+      license = "Detection Rule License 1.1 https://github.com/Neo23x0/signature-base/blob/master/LICENSE"
+      author = "Marc Stroebel"
+      date = "2020-12-15"
+      reference1 = "https://www.hvs-consulting.de/media/downloads/ThreatReport-Lazarus.pdf"
+      reference2 = "https://www.hybrid-analysis.com/sample/d16163526242508d6961f061aaffe3ae5321bd64d8ceb6b2788f1570757595fc?environmentId=2"
+   strings:
+      $s1 = "Scan.exe StartIP EndIP ThreadCount logfilePath [Username Password Deep]" fullword ascii
+      $s2 = "%s - %s:(Username - %s / Password - %s" fullword ascii
+      $s3 = "Load mpr.dll Error " fullword ascii
+      $s4 = "Load Netapi32.dll Error " fullword ascii
+      $s5 = "%s U/P not Correct! - %d" fullword ascii
+      $s6 = "GetNetWorkInfo Version 1.0" fullword wide
+      $s7 = "Hello World!" fullword wide
+      $s8 = "%s Error: %ld" fullword ascii
+      $s9 = "%s U/P Correct!" fullword ascii
+      $s10 = "%s --------" fullword ascii
+      $s11 = "%s%-30s%I64d" fullword ascii
+      $s12 = "%s%-30s(DIR)" fullword ascii
+      $s13 = "%04d-%02d-%02d %02d:%02d" fullword ascii
+      $s14 = "Share:              Local Path:                   Uses:   Descriptor:" fullword ascii
+      $s15 = "Share:              Type:                   Remark:" fullword ascii
+   condition:
+      uint16(0) == 0x5a4d and filesize < 200KB and (10 of them)
+}
+
+rule HvS_APT37_cred_tool {
+   meta:
+      description = "Unknown cred tool used by APT37"
+      license = "Detection Rule License 1.1 https://github.com/Neo23x0/signature-base/blob/master/LICENSE"
+      author = "Markus Poelloth"
+      date = "2020-12-15"
+      reference = "https://www.hvs-consulting.de/media/downloads/ThreatReport-Lazarus.pdf"
+   strings:
+      $s1 = "        <requestedExecutionLevel level=\"asInvoker\" uiAccess=\"false\"></requestedExecutionLevel>" fullword ascii
+      $s2 = "Domain Login" fullword ascii
+      $s3 = "IEShims_GetOriginatingThreadContext" fullword ascii
+      $s4 = " Type Descriptor'" fullword ascii
+      $s5 = "User: %s" fullword ascii
+      $s6 = "Pass: %s" fullword ascii
+      $s7 = "  <trustInfo xmlns=\"urn:schemas-microsoft-com:asm.v3\">" fullword ascii
+      $s8 = "E@c:\\u" fullword ascii
+   condition:
+      filesize < 500KB and 7 of them
+}
+
+rule HvS_APT37_RAT_loader {
+   meta:
+      description = "BLINDINGCAN RAT loader named iconcash.db used by APT37"
+      license = "Detection Rule License 1.1 https://github.com/Neo23x0/signature-base/blob/master/LICENSE"
+      author = "Marc Stroebel"
+      date = "2020-12-15"
+      hash = "b70e66d387e42f5f04b69b9eb15306036702ab8a50b16f5403289b5388292db9"
+      reference1 = "https://www.hvs-consulting.de/media/downloads/ThreatReport-Lazarus.pdf"
+      reference2 = "https://us-cert.cisa.gov/ncas/analysis-reports/ar20-232a"
+   condition:
+      (pe.version_info["OriginalFilename"] contains "MFC_DLL.dll") and
+      (pe.exports("SMain") and pe.exports("SMainW") )
+}
+
+
+rule HvS_APT37_webshell_img_thumbs_asp {
+   meta:
+      description = "Webshell named img.asp, thumbs.asp or thumb.asp used by APT37"
+      license = "Detection Rule License 1.1 https://github.com/Neo23x0/signature-base/blob/master/LICENSE"
+      author = "Moritz Oettle"
+      date = "2020-12-15"
+      reference = "https://www.hvs-consulting.de/media/downloads/ThreatReport-Lazarus.pdf"
+      hash = "94d2448d3794ae3f29678a7337473d259b5cfd1c7f703fe53ee6c84dd10a48ef"
+   strings:
+      $s1 = "strMsg = \"E : F\"" fullword ascii
+      $s2 = "strMsg = \"S : \" & Len(fileData)" fullword ascii
+      $s3 = "Left(workDir, InStrRev(workDir, \"/\")) & \"video\""
+
+      $a1 = "Server.CreateObject(\"Scripting.FileSystemObject\")" fullword ascii
+      $a2 = "Dim tmpPath, workDir" fullword ascii
+      $a3 = "Dim objFSO, objTextStream" fullword ascii
+      $a4 = "workDir = Request.ServerVariables(\"URL\")" fullword ascii
+      $a5 = "InStrRev(workDir, \"/\")" ascii
+
+      $g1 = "WriteFile = 0" fullword ascii
+      $g2 = "fileData = Request.Form(\"fp\")" fullword ascii
+      $g3 = "fileName = Request.Form(\"fr\")" fullword ascii
+      $g4 = "Err.Clear()" fullword ascii
+      $g5 = "Option Explicit" fullword ascii
+   condition:
+      filesize < 2KB and (( 1 of ($s*) ) or (3 of ($a*)) or (5 of ($g*)))
+}
+
+rule HvS_APT37_webshell_template_query_asp {
+   meta:
+      description = "Webshell named template-query.aspimg.asp used by APT37"
+      license = "Detection Rule License 1.1 https://github.com/Neo23x0/signature-base/blob/master/LICENSE"
+      author = "Moritz Oettle"
+      date = "2020-12-15"
+      reference = "https://www.hvs-consulting.de/media/downloads/ThreatReport-Lazarus.pdf"
+      hash = "961a66d01c86fa5982e0538215b17fb9fae2991331dfea812b8c031e2ceb0d90"
+   strings:
+      $g1 = "server.scripttimeout=600" fullword ascii
+      $g2 = "response.buffer=true" fullword ascii
+      $g3 = "response.expires=-1" fullword ascii
+      $g4 = "session.timeout=600" fullword ascii
+
+      $a1 = "redhat hacker" ascii
+      $a2 = "want_pre.asp" ascii
+      $a3 = "vgo=\"admin\"" ascii
+      $a4 = "ywc=false" ascii
+
+      $s1 = "public  br,ygv,gbc,ydo,yka,wzd,sod,vmd" fullword ascii
+   condition:
+      filesize > 70KB and filesize < 200KB and (( 1 of ($s*) ) or (2 of ($a*)) or (3 of ($g*)))
+}
+
+/* Possibly prone to FPs
+rule HvS_APT37_mimikatz_loader_DF012 {
+   meta:
+      description = "Loader for encrypted Mimikatz variant used by APT37"
+      license = "Detection Rule License 1.1 https://github.com/Neo23x0/signature-base/blob/master/LICENSE"
+      author = "Marc Stroebel"
+      date = "2020-12-15"
+      reference = "https://www.hvs-consulting.de/media/downloads/ThreatReport-Lazarus.pdf"
+      hash = "42e4a9aeff3744bbbc0e82fd5b93eb9b078460d8f40e0b61b27b699882f521be"
+   strings:
+      $s1 = ".?AVCEncryption@@" fullword ascii
+      $s2 = "afrfa"
+   condition:
+      uint16(0) == 0x5a4d and filesize < 200KB and 
+      (pe.imphash() == "fa0b87c7e07d21001355caf7b5027219") and (all of them)
+}
+*/
+
+rule HvS_APT37_webshell_controllers_asp {
+   meta:
+      description = "Webshell named controllers.asp or inc-basket-offer.asp used by APT37"
+      license = "Detection Rule License 1.1 https://github.com/Neo23x0/signature-base/blob/master/LICENSE"
+      author = "Moritz Oettle"
+      date = "2020-12-15"
+      reference = "https://www.hvs-consulting.de/media/downloads/ThreatReport-Lazarus.pdf"
+      hash = "829462fc6d84aae04a962dfc919d0a392265fbf255eab399980d2b021e385517"
+   strings:
+      $s0 = "<%@Language=VBScript.Encode" ascii
+// Case permutations of the word SeRvEr encoded with the Microsoft Script Encoder followed by .scriptrimeOut
+      $x1 = { 64 7F 44 2D 7F 44 63 2F 6D 4D 6B 61 4F 59 62 3A 6E 72 21 59 }
+      $x2 = { 64 7F 49 2D 41 44 63 2F 6D 4D 6B 61 4F 59 62 3A 6E 72 21 59 }
+      $x3 = { 64 7F 49 2D 41 49 63 2F 6D 4D 6B 61 4F 59 62 3A 6E 72 21 59 }
+      $x4 = { 64 7F 49 23 7F 44 63 2F 6D 4D 6B 61 4F 59 62 3A 6E 72 21 59 }
+      $x5 = { 64 7F 49 23 7F 49 63 2F 6D 4D 6B 61 4F 59 62 3A 6E 72 21 59 }
+      $x6 = { 64 7F 49 23 41 44 63 2F 6D 4D 6B 61 4F 59 62 3A 6E 72 21 59 }
+      $x7 = { 64 7F 49 23 41 49 63 2F 6D 4D 6B 61 4F 59 62 3A 6E 72 21 59 }
+      $x8 = { 64 41 44 2D 7F 44 63 2F 6D 4D 6B 61 4F 59 62 3A 6E 72 21 59 }
+      $x9 = { 64 41 44 2D 7F 49 63 2F 6D 4D 6B 61 4F 59 62 3A 6E 72 21 59 }
+      $x10 = { 64 41 44 2D 41 44 63 2F 6D 4D 6B 61 4F 59 62 3A 6E 72 21 59 }
+      $x11 = { 64 41 44 2D 41 49 63 2F 6D 4D 6B 61 4F 59 62 3A 6E 72 21 59 }
+      $x12 = { 64 7F 44 2D 7F 49 63 2F 6D 4D 6B 61 4F 59 62 3A 6E 72 21 59 }
+      $x13 = { 64 41 44 23 7F 44 63 2F 6D 4D 6B 61 4F 59 62 3A 6E 72 21 59 }
+      $x14 = { 64 41 44 23 7F 49 63 2F 6D 4D 6B 61 4F 59 62 3A 6E 72 21 59 }
+      $x15 = { 64 41 44 23 41 44 63 2F 6D 4D 6B 61 4F 59 62 3A 6E 72 21 59 }
+      $x16 = { 64 41 44 23 41 49 63 2F 6D 4D 6B 61 4F 59 62 3A 6E 72 21 59 }
+      $x17 = { 64 41 49 2D 7F 44 63 2F 6D 4D 6B 61 4F 59 62 3A 6E 72 21 59 }
+      $x18 = { 64 41 49 2D 7F 49 63 2F 6D 4D 6B 61 4F 59 62 3A 6E 72 21 59 }
+      $x19 = { 64 41 49 2D 41 44 63 2F 6D 4D 6B 61 4F 59 62 3A 6E 72 21 59 }
+      $x20 = { 64 41 49 2D 41 49 63 2F 6D 4D 6B 61 4F 59 62 3A 6E 72 21 59 }
+      $x21 = { 64 41 49 23 7F 44 63 2F 6D 4D 6B 61 4F 59 62 3A 6E 72 21 59 }
+      $x22 = { 64 41 49 23 7F 49 63 2F 6D 4D 6B 61 4F 59 62 3A 6E 72 21 59 }
+      $x23 = { 64 7F 44 2D 41 44 63 2F 6D 4D 6B 61 4F 59 62 3A 6E 72 21 59 }
+      $x24 = { 64 41 49 23 41 44 63 2F 6D 4D 6B 61 4F 59 62 3A 6E 72 21 59 }
+      $x25 = { 64 41 49 23 41 49 63 2F 6D 4D 6B 61 4F 59 62 3A 6E 72 21 59 }
+      $x26 = { 6A 7F 44 2D 7F 44 63 2F 6D 4D 6B 61 4F 59 62 3A 6E 72 21 59 }
+      $x27 = { 6A 7F 44 2D 7F 49 63 2F 6D 4D 6B 61 4F 59 62 3A 6E 72 21 59 }
+      $x28 = { 6A 7F 44 2D 41 44 63 2F 6D 4D 6B 61 4F 59 62 3A 6E 72 21 59 }
+      $x29 = { 6A 7F 44 2D 41 49 63 2F 6D 4D 6B 61 4F 59 62 3A 6E 72 21 59 }
+      $x30 = { 6A 7F 44 23 7F 44 63 2F 6D 4D 6B 61 4F 59 62 3A 6E 72 21 59 }
+      $x31 = { 6A 7F 44 23 7F 49 63 2F 6D 4D 6B 61 4F 59 62 3A 6E 72 21 59 }
+      $x32 = { 6A 7F 44 23 41 44 63 2F 6D 4D 6B 61 4F 59 62 3A 6E 72 21 59 }
+      $x33 = { 6A 7F 44 23 41 49 63 2F 6D 4D 6B 61 4F 59 62 3A 6E 72 21 59 }
+      $x34 = { 64 7F 44 2D 41 49 63 2F 6D 4D 6B 61 4F 59 62 3A 6E 72 21 59 }
+      $x35 = { 6A 7F 49 2D 7F 44 63 2F 6D 4D 6B 61 4F 59 62 3A 6E 72 21 59 }
+      $x36 = { 6A 7F 49 2D 7F 49 63 2F 6D 4D 6B 61 4F 59 62 3A 6E 72 21 59 }
+      $x37 = { 6A 7F 49 2D 41 44 63 2F 6D 4D 6B 61 4F 59 62 3A 6E 72 21 59 }
+      $x38 = { 6A 7F 49 2D 41 49 63 2F 6D 4D 6B 61 4F 59 62 3A 6E 72 21 59 }
+      $x39 = { 6A 7F 49 23 7F 44 63 2F 6D 4D 6B 61 4F 59 62 3A 6E 72 21 59 }
+      $x40 = { 6A 7F 49 23 7F 49 63 2F 6D 4D 6B 61 4F 59 62 3A 6E 72 21 59 }
+      $x41 = { 6A 7F 49 23 41 44 63 2F 6D 4D 6B 61 4F 59 62 3A 6E 72 21 59 }
+      $x42 = { 6A 7F 49 23 41 49 63 2F 6D 4D 6B 61 4F 59 62 3A 6E 72 21 59 }
+      $x43 = { 6A 41 44 2D 7F 44 63 2F 6D 4D 6B 61 4F 59 62 3A 6E 72 21 59 }
+      $x44 = { 6A 41 44 2D 7F 49 63 2F 6D 4D 6B 61 4F 59 62 3A 6E 72 21 59 }
+      $x45 = { 64 7F 44 23 7F 44 63 2F 6D 4D 6B 61 4F 59 62 3A 6E 72 21 59 }
+      $x46 = { 6A 41 44 2D 41 44 63 2F 6D 4D 6B 61 4F 59 62 3A 6E 72 21 59 }
+      $x47 = { 6A 41 44 2D 41 49 63 2F 6D 4D 6B 61 4F 59 62 3A 6E 72 21 59 }
+      $x48 = { 6A 41 44 23 7F 44 63 2F 6D 4D 6B 61 4F 59 62 3A 6E 72 21 59 }
+      $x49 = { 6A 41 44 23 7F 49 63 2F 6D 4D 6B 61 4F 59 62 3A 6E 72 21 59 }
+      $x50 = { 6A 41 44 23 41 44 63 2F 6D 4D 6B 61 4F 59 62 3A 6E 72 21 59 }
+      $x51 = { 6A 41 44 23 41 49 63 2F 6D 4D 6B 61 4F 59 62 3A 6E 72 21 59 }
+      $x52 = { 6A 41 49 2D 7F 44 63 2F 6D 4D 6B 61 4F 59 62 3A 6E 72 21 59 }
+      $x53 = { 6A 41 49 2D 7F 49 63 2F 6D 4D 6B 61 4F 59 62 3A 6E 72 21 59 }
+      $x54 = { 6A 41 49 2D 41 44 63 2F 6D 4D 6B 61 4F 59 62 3A 6E 72 21 59 }
+      $x55 = { 6A 41 49 2D 41 49 63 2F 6D 4D 6B 61 4F 59 62 3A 6E 72 21 59 }
+      $x56 = { 64 7F 44 23 7F 49 63 2F 6D 4D 6B 61 4F 59 62 3A 6E 72 21 59 }
+      $x57 = { 6A 41 49 23 7F 44 63 2F 6D 4D 6B 61 4F 59 62 3A 6E 72 21 59 }
+      $x58 = { 6A 41 49 23 7F 49 63 2F 6D 4D 6B 61 4F 59 62 3A 6E 72 21 59 }
+      $x59 = { 6A 41 49 23 41 44 63 2F 6D 4D 6B 61 4F 59 62 3A 6E 72 21 59 }
+      $x60 = { 6A 41 49 23 41 49 63 2F 6D 4D 6B 61 4F 59 62 3A 6E 72 21 59 }
+      $x61 = { 64 7F 44 23 41 44 63 2F 6D 4D 6B 61 4F 59 62 3A 6E 72 21 59 }
+      $x62 = { 64 7F 44 23 41 49 63 2F 6D 4D 6B 61 4F 59 62 3A 6E 72 21 59 }
+      $x63 = { 64 7F 49 2D 7F 44 63 2F 6D 4D 6B 61 4F 59 62 3A 6E 72 21 59 }
+      $x64 = { 64 7F 49 2D 7F 49 63 2F 6D 4D 6B 61 4F 59 62 3A 6E 72 21 59 }
+   condition:
+      filesize > 50KB and filesize < 200KB and ( $s0 and 1 of ($x*) )
+}
+rule SUSP_VEST_Encryption_Core_Accumulator_Jan21 {
+   meta:
+      description = "Detects VEST encryption core accumulator in PE file as used by Lazarus malware"
+      author = "Florian Roth (Nextron Systems)"
+      reference = "https://twitter.com/ochsenmeier/status/1354737155495649280"
+      date = "2021-01-28"
+      score = 70
+      hash1 = "7cd3ca8bdfb44e98a4b9d0c6ad77546e03d169bda9bdf3d1bcf339f68137af23"
+   strings:
+      $sc1 = { 4F 70 46 DA E1 8D F6 41 59 E8 5D 26 1E CC 2F 89
+               26 6D 52 BA BC 11 6B A9 C6 47 E4 9C 1E B6 65 A2
+               B6 CD 90 47 1C DF F8 10 4B D2 7C C4 72 25 C6 97
+               25 5D C6 1D 4B 36 BC 38 36 33 F8 89 B4 4C 65 A7
+               96 CA 1B 63 C3 4B 6A 63 DC 85 4C 57 EE 2A 05 C7
+               0C E7 39 35 8A C1 BF 13 D9 52 51 3D 2E 41 F5 72
+               85 23 FE A1 AA 53 61 3B 25 5F 62 B4 36 EE 2A 51
+               AF 18 8E 9A C6 CF C4 07 4A 9B 25 9B 76 62 0E 3E
+               96 3A A7 64 23 6B B6 19 BC 2D 40 D7 36 3E E2 85
+               9A D1 22 9F BC 30 15 9F C2 5D F1 23 E6 3A 73 C0 }
+   condition:
+      uint16(0) == 0x5a4d and
+      1 of them
+}
+/*
+   Yara Rule Set
+   Author: Florian Roth
+   Date: 2018-06-01
+   Identifier: Lazarus Group
+   Reference: https://twitter.com/DrunkBinary/status/1002587521073721346
+*/
+
+/* Rule Set ----------------------------------------------------------------- */
+
+import "pe"
+
+rule APT_Lazarus_Dropper_Jun18_1 {
+   meta:
+      description = "Detects Lazarus Group Dropper"
+      license = "Detection Rule License 1.1 https://github.com/Neo23x0/signature-base/blob/master/LICENSE"
+      author = "Florian Roth (Nextron Systems)"
+      reference = "https://twitter.com/DrunkBinary/status/1002587521073721346"
+      date = "2018-06-01"
+      hash1 = "086a50476f5ceee4b10871c1a8b0a794e96a337966382248a8289598b732bd47"
+      hash2 = "9f2d4fd79d3c68270102c4c11f3e968c10610a2106cbf1298827f8efccdd70a9"
+   strings:
+      $s1 = /%s\\windows10-kb[0-9]{7}.exe/ fullword ascii
+      $s2 = "EYEJIW" fullword ascii
+      $s3 = "update" fullword wide /* Goodware String - occured 254 times */
+   condition:
+      uint16(0) == 0x5a4d and filesize < 21000KB and (
+        pe.imphash() == "fcac768eff9896d667a7c706d70712ce" or
+        all of them
+      )
+}
+
+rule APT_Lazarus_RAT_Jun18_1 {
+   meta:
+      description = "Detects Lazarus Group RAT"
+      license = "Detection Rule License 1.1 https://github.com/Neo23x0/signature-base/blob/master/LICENSE"
+      author = "Florian Roth (Nextron Systems)"
+      reference = "https://twitter.com/DrunkBinary/status/1002587521073721346"
+      date = "2018-06-01"
+      hash1 = "c10363059c57c52501c01f85e3bb43533ccc639f0ea57f43bae5736a8e7a9bc8"
+      hash2 = "e98991cdd9ddd30adf490673c67a4f8241993f26810da09b52d8748c6160a292"
+   strings:
+      $a1 = "www.marmarademo.com/include/extend.php" fullword ascii
+      $a2 = "www.33cow.com/include/control.php" fullword ascii
+      $a3 = "www.97nb.net/include/arc.sglistview.php" fullword ascii
+
+      $c1 = "Content-Disposition: form-data; name=\"file1\"; filename=\"example.dat\"" fullword ascii
+      $c2 = "Content-Disposition: form-data; name=\"file1\"; filename=\"pratice.pdf\"" fullword ascii
+      $c3 = "Content-Disposition: form-data; name=\"file1\"; filename=\"happy.pdf\"" fullword ascii
+      $c4 = "Content-Disposition: form-data; name=\"file1\"; filename=\"my.doc\"" fullword ascii
+      $c5 = "Content-Disposition: form-data; name=\"board_id\"" fullword ascii
+
+      $s1 = "Winhttp.dll" fullword ascii
+      $s2 = "Wsock32.dll" fullword ascii
+      $s3 = "WM*.tmp" fullword ascii
+      $s4 = "FM*.tmp" fullword ascii
+      $s5 = "Cache-Control: max-age=0" fullword ascii /* Goodware String - occured 1 times */
+   condition:
+      uint16(0) == 0x5a4d and filesize < 500KB and (
+         1 of ($a*) or
+         2 of ($c*) or
+         4 of them
+      )
+}
+
+rule APT_Lazarus_RAT_Jun18_2 {
+   meta:
+      description = "Detects Lazarus Group RAT"
+      license = "Detection Rule License 1.1 https://github.com/Neo23x0/signature-base/blob/master/LICENSE"
+      author = "Florian Roth (Nextron Systems)"
+      reference = "https://twitter.com/DrunkBinary/status/1002587521073721346"
+      date = "2018-06-01"
+      hash1 = "e6096fb512a6d32a693491f24e67d772f7103805ad407dc37065cebd1962a547"
+   strings:
+      $s1 = "\\KB\\Release\\" ascii
+      $s3 = "KB, Version 1.0" fullword wide
+      $s4 = "TODO: (c) <Company name>.  All rights reserved." fullword wide
+   condition:
+      uint16(0) == 0x5a4d and filesize < 5000KB and 2 of them
+}
+rule APT_MAL_NK_Lazarus_VHD_Ransomware_Oct20_1 {
+   meta:
+      description = "Detects Lazarus VHD Ransomware"
+      author = "Florian Roth (Nextron Systems)"
+      reference = "https://securelist.com/lazarus-on-the-hunt-for-big-game/97757/"
+      date = "2020-10-05"
+      hash1 = "52888b5f881f4941ae7a8f4d84de27fc502413861f96ee58ee560c09c11880d6"
+      hash2 = "5e78475d10418c6938723f6cfefb89d5e9de61e45ecf374bb435c1c99dd4a473"
+      hash3 = "6cb9afff8166976bd62bb29b12ed617784d6e74b110afcf8955477573594f306"
+   strings:
+      $s1 = "HowToDecrypt.txt" wide fullword
+      $s2 = "rsa.cpp" wide fullword
+      $s3 = "sc stop \"Microsoft Exchange Compliance Service\"" ascii fullword
+
+      $op1 = { 8b 8d bc fc ff ff 8b 94 bd 34 03 00 00 33 c0 50 }
+      $op2 = { 8b 8d 98 f9 ff ff 8d 64 24 00 8b 39 3b bc 85 34 }
+      $op3 = { 8b 94 85 34 03 00 00 89 11 40 83 c1 04 3b 06 7c }
+   condition:
+      uint16(0) == 0x5a4d and
+      filesize < 400KB and
+      2 of them
+}
+
+rule APT_MAL_NK_Lazarus_VHD_Ransomware_Oct20_2 {
+   meta:
+      description = "Detects Lazarus VHD Ransomware"
+      author = "Florian Roth (Nextron Systems)"
+      reference = "https://securelist.com/lazarus-on-the-hunt-for-big-game/97757/"
+      date = "2020-10-05"
+      hash1 = "097ca829e051a4877bca093cee340180ff5f13a9c266ad4141b0be82aae1a39b"
+      hash2 = "73a10be31832c9f1cbbd798590411009da0881592a90feb472e80025dfb0ea79"
+   strings:
+      $op1 = { f9 36 88 08 8d ad fc ff ff ff 66 ff c1 e9 72 86 }
+      $op2 = { c6 c4 58 0f a4 c8 12 8d ad ff ff ff ff 0f b6 44 }
+      $op3 = { 88 02 66 c1 f0 54 8d bf fc ff ff ff 0f ba e0 19 }
+   condition:
+      uint16(0) == 0x5a4d and
+      filesize < 9000KB and
+      all of them
+}
+rule lazarus_bindshell {
+meta:
+author=" Withsecure Threat Intelligence " description="Detects bind shell from Lazarus group" date="2023-01-01"
+strings:
+$str_comspec = "COMSPEC"
+$str_consolewindow = "GetConsoleWindow" $str_ShowWindow = "ShowWindow" $str_WSASocketA = "WSASocketA" $str_CreateProcessA = "CreateProcessA" $str_port = {B9 4D 05 00 00 89}
+condition:
+uint16(0) == 0x5A4D and all of them
+}
+rule lazarus_dtrack_unpacked {
+meta:
+author="Withsecure Threat Intelligence"
+description="Detects unpacked dtrack variant with smb data staging" date="2023-01-01"
+strings:
+$str_mutex = "MTX_Global"
+$str_cmd_1 = "/c net use \\\\" wide
+$str_cmd_2 = "/c ping -n 3 127.0.01 > NUL % echo EEE > \"%s\"" wide
+$str_cmd_3 = "/c move /y %s \\\\" wide
+$str_cmd_4 = "/c systeminfo > \"%s\" & tasklist > \"%s\" & netstat -naop tcp > \"%s\"" wide
+condition:
+uint16(0) == 0x5A4D and all of them
+}
+rule lazarus_dtrack_unpacked2 {
+meta:
+author=" Withsecure Threat Intelligence "
+description="Detects lazarus acres.exe 64bit rat written with QT framework" date="2023-01-01"
+strings:
+$str_nopineapple = "< No Pineapple! >" $str_qt_library = "Qt 5.12.10"
+$str_xor = {8B 10 83 F6 ?? 83 FA 01 77}
+condition:
+uint16(0) == 0x5A4D and all of them
+}
+rule lazarus_grease2 {
+meta:
+author=" Withsecure Threat Intelligence " description="Detects GREASE2 malware" date="2023-01-01"
+strings:
+$str_rdpconf = "c: \\windows\\temp\\RDPConf.exe" fullword nocase 
+$str_rdpwinst = "c: \\windows\\temp\\RDPWInst.exe" fullword nocase 
+$str_net_user = "net user"
+$str_admins_add = "net localgroup administrators"
+condition:
+uint16(0) == 0x5A4D and all of them
 }
