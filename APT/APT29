@@ -374,3 +374,22 @@ rule APT_APT29_NOBELIUM_Malware_May21_4 {
       filesize < 3000KB and
       ( $xc1 or 3 of them )
 }
+
+rule APT_apt29_loader2018 : apt29 loader
+{
+    meta:
+        author = "INVOKER"
+        date = "2023-04-08"
+        link = "https://ryancor.medium.com/extracting-embedded-payloads-from-malware-aaca8e9aa1a9"
+        md5 = "16bbc967a8b6a365871a05c74a4f345b"
+    strings:
+        $str1 = "VirtualAlloc"
+        $str2 = "FindResourceA"
+        $str3 = "UAWAVAUATWVSH" //cs push orperation
+
+    condition:
+        uint16(0) == 0x5A4D and 
+        all of ($str*) and
+        filesize<1MB and
+        uint32(uint32(0x3C)+8) == 0x00000000
+}
